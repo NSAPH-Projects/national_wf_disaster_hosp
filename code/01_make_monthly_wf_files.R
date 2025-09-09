@@ -9,7 +9,7 @@ pacman::p_load(tidyverse, here, sfarrow, sf)
 
 # Read --------------------------------------------------------------------
 
-wf_dat <- st_read(here('local_data', 'wfbz_disasters.geojson'))
+wf_dat <- st_read(here('local_data', 'wfbz_disasters_2000-2025.geojson'))
 
 
 # Make monthly files ------------------------------------------------------
@@ -67,82 +67,82 @@ for (i in 1:length(months)) {
 }
 
 
-# Main analysis -----------------------------------------------------------
-
-main <-
-  wf_dat %>%
-  select(ID_climate_hazard = wildfire_id,
-         buffer_dist = buffer_dist_main,
-         month_exposed)
-
-for (i in 1:length(months)) {
-  main_mon <- main %>%
-    filter(month_exposed == months[i]) %>%
-    select(-month_exposed)
-  
-  st_write(
-    main_mon,
-    here(
-      "local_data",
-      "monthly_wf_exposure",
-      "main_analysis",
-      paste0("month_", months[i], ".geojson")
-    ),
-    driver = "GeoJSON",
-    delete_dsn = TRUE
-  )
-}
-
-
-# Sensitivity smaller -----------------------------------------------------
-
-smaller <-
-  wf_dat %>%
-  select(ID_climate_hazard = wildfire_id,
-         buffer_dist = buffer_dist_smaller,
-         month_exposed)
-
-for (i in 1:length(months)) {
-  smaller_mon <- smaller %>%
-    filter(month_exposed == months[i]) %>%
-    select(-month_exposed)
-  
-  st_write(
-    smaller_mon,
-    here(
-      "local_data",
-      "monthly_wf_exposure",
-      "sensitivity_smaller",
-      paste0("month_", months[i], ".geojson")
-    ),
-    driver = "GeoJSON",
-    delete_dsn = TRUE
-  )
-}
-
-
-# Sens larger -------------------------------------------------------------
-
-larger <-
-  wf_dat %>%
-  select(ID_climate_hazard = wildfire_id,
-         buffer_dist = buffer_dist_smaller,
-         month_exposed)
-
-for (i in 1:length(months)) {
-  larger_mon <- larger %>%
-    filter(month_exposed == months[i]) %>%
-    select(-month_exposed)
-  
-  st_write(
-    larger_mon,
-    here(
-      "local_data",
-      "monthly_wf_exposure",
-      "sensitivity_larger",
-      paste0("month_", months[i], ".geojson")
-    ),
-    driver = "GeoJSON",
-    delete_dsn = TRUE
-  )
-}
+# # Main analysis -----------------------------------------------------------
+# 
+# main <-
+#   wf_dat %>%
+#   select(ID_climate_hazard = wildfire_id,
+#          buffer_dist = buffer_dist_main,
+#          month_exposed)
+# 
+# for (i in 1:length(months)) {
+#   main_mon <- main %>%
+#     filter(month_exposed == months[i]) %>%
+#     select(-month_exposed)
+#   
+#   st_write(
+#     main_mon,
+#     here(
+#       "local_data",
+#       "monthly_wf_exposure",
+#       "main_analysis",
+#       paste0("month_", months[i], ".geojson")
+#     ),
+#     driver = "GeoJSON",
+#     delete_dsn = TRUE
+#   )
+# }
+# 
+# 
+# # Sensitivity smaller -----------------------------------------------------
+# 
+# smaller <-
+#   wf_dat %>%
+#   select(ID_climate_hazard = wildfire_id,
+#          buffer_dist = buffer_dist_smaller,
+#          month_exposed)
+# 
+# for (i in 1:length(months)) {
+#   smaller_mon <- smaller %>%
+#     filter(month_exposed == months[i]) %>%
+#     select(-month_exposed)
+#   
+#   st_write(
+#     smaller_mon,
+#     here(
+#       "local_data",
+#       "monthly_wf_exposure",
+#       "sensitivity_smaller",
+#       paste0("month_", months[i], ".geojson")
+#     ),
+#     driver = "GeoJSON",
+#     delete_dsn = TRUE
+#   )
+# }
+# 
+# 
+# # Sens larger -------------------------------------------------------------
+# 
+# larger <-
+#   wf_dat %>%
+#   select(ID_climate_hazard = wildfire_id,
+#          buffer_dist = buffer_dist_smaller,
+#          month_exposed)
+# 
+# for (i in 1:length(months)) {
+#   larger_mon <- larger %>%
+#     filter(month_exposed == months[i]) %>%
+#     select(-month_exposed)
+#   
+#   st_write(
+#     larger_mon,
+#     here(
+#       "local_data",
+#       "monthly_wf_exposure",
+#       "sensitivity_larger",
+#       paste0("month_", months[i], ".geojson")
+#     ),
+#     driver = "GeoJSON",
+#     delete_dsn = TRUE
+#   )
+# }

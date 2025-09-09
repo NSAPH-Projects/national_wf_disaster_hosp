@@ -2,8 +2,10 @@
 
 
 # Load the tigris package
+library(here)
 library(tigris)
 library(sf)
+library(tidyverse)
 
 # Set options to cache the data locally
 options(tigris_use_cache = TRUE)
@@ -14,7 +16,7 @@ zctas_2020 <- zctas(year = 2020)
 # View the first few rows
 head(zctas_2020)
 
-zctas_2020 <- zctas_2020 %>% select(ID_spatial_unit = ZCTA5CE20)
+zctas_2020 <- zctas_2020 %>% select(ID_admin_unit = ZCTA5CE20)
 
 
 st_write(
