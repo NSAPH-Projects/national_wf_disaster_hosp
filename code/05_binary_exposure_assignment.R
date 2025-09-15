@@ -2,7 +2,7 @@
 
 pacman::p_load(tidyverse, here)
 
-exp <- read_rds(here("local_data", "percent_exposed_by_zcta_month.RDS"))
+exp <- read_rds(here("local_data", "intermediate_data", "percent_exposed_by_zcta_month.RDS"))
 
 
 exp <- exp %>% mutate(

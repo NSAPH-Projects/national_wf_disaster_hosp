@@ -1,35 +1,25 @@
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 import tqdm
 import pathlib
 import os
 import pandas as pd
 
-
+# Stable local version
 from popexposure.pop_estimator import PopEstimator
 
 
-def process_exposure(i, est, months):
+def process_exposure(est, pop_data_path, hazard_data_path, month):
+    est.pop_data = pop_data_path
     exposed_pop_df = est.est_exposed_pop(
-        hazard_data=all_wf_exposure[i],
-        hazard_specific=False,
-        pop_data=repeated_paths[i],
+        hazard_data=hazard_data_path, hazard_specific=False
     )
     if exposed_pop_df is not None:
-        exposed_pop_df["month"] = months[i]
-    print("completed one iteration")
-    print(i)
+        exposed_pop_df["month"] = month
     return exposed_pop_df
 
 
-def process_total_pop(i, est):
-    total_pop_df = est.est_total_pop(pop_data=ghsl_paths[i])
-    total_pop_df["ghsl_used"] = i + 1
-    print("completed one iteration")
-    print(i)
-    return total_pop_df
-
-
 if __name__ == "__main__":
+    print("Running find_pop_exposed_to_wf_by_zcta.")
 
     # set directories
     base_path = pathlib.Path.cwd().parent
@@ -62,14 +52,16 @@ if __name__ == "__main__":
         / "GHS_POP_E2020_GLOBE_R2023A_54009_1000_V1_0.tif"
     )
 
-    wf_dat = (
+    all_wf_dat = (
         base_path / "national_wf_disaster_hosp" / "local_data" / "monthly_wf_exposure"
     )
 
-    all_wf_dat = wf_dat / "all_analysis"
-
     zctas_2020 = (
-        base_path / "national_wf_disaster_hosp" / "local_data" / "zctas_2020.parquet"
+        base_path
+        / "national_wf_disaster_hosp"
+        / "local_data"
+        / "raw_data"
+        / "zctas_2020.parquet"
     )
 
     # make a list of paths that we're going to use for each month
@@ -92,11 +84,12 @@ if __name__ == "__main__":
     exposed_pop = []
     est = PopEstimator(admin_data=zctas_2020)
 
-    with ThreadPoolExecutor() as executor:
-        # Use a list comprehension to pass est to each call
+    with ProcessPoolExecutor() as executor:
         futures = [
-            executor.submit(process_exposure, i, est, months)
-            for i in range(len(all_wf_exposure))
+            executor.submit(
+                process_exposure, est, repeated_paths[i], all_wf_exposure[i], months[i]
+            )
+            for i in range(0, len(all_wf_exposure))
         ]
         for f in tqdm.tqdm(
             futures, total=len(all_wf_exposure), desc="Calculating exposed population"
@@ -107,25 +100,5 @@ if __name__ == "__main__":
 
     if exposed_pop:
         final_df = pd.concat(exposed_pop, ignore_index=True)
-        output_path = "/Volumes/squirrel-utopia 1/national_wf_disaster_hosp/local_data"
-        final_df.to_csv("exposed_population_counts_by_zcta.csv", index=False)
-
-    total_pop = []
-    est = PopEstimator(admin_data=zctas_2020)
-
-    with ThreadPoolExecutor() as executor:
-        # Use a list comprehension to pass est to each call
-        futures = [
-            executor.submit(process_total_pop, i, est) for i in range(len(ghsl_paths))
-        ]
-        for f in tqdm.tqdm(
-            futures, total=len(ghsl_paths), desc="Calculating total population"
-        ):
-            result = f.result()
-            if result is not None:
-                total_pop.append(result)
-
-    if total_pop:
-        final_df = pd.concat(total_pop, ignore_index=True)
-        output_path = "/Volumes/squirrel-utopia 1/national_wf_disaster_hosp/local_data"
-        final_df.to_csv("total_population_counts_by_zcta.csv", index=False)
+        output_path = "/Volumes/squirrel-utopia/national_wf_disaster_hosp/local_data/intermediate_data/exposed_population_counts_by_zcta.csv"
+        final_df.to_csv(output_path, index=False)

@@ -4,9 +4,17 @@ pacman::p_load(tidyverse, here)
 
 # Load data ---------------------------------------------------------------
 
-exp <- read_csv(here("local_data", "exposed_population_counts_by_zcta.csv"))
+exp <- read_csv(here(
+  "local_data",
+  "intermediate_data",
+  "exposed_population_counts_by_zcta.csv"
+))
 
-pop <- read_csv(here("local_data", "total_population_counts_by_zcta.csv"))
+pop <- read_csv(here(
+  "local_data",
+  "intermediate_data",
+  "total_population_counts_by_zcta.csv"
+))
 
 
 # Get right pop data for each year ----------------------------------------
@@ -59,5 +67,11 @@ percent_exposed <-
 )
 
 
-write_rds(percent_exposed,
-          here("local_data", "percent_exposed_by_zcta_month.RDS"))
+write_rds(
+  percent_exposed,
+  here(
+    "local_data",
+    "intermediate_data",
+    "percent_exposed_by_zcta_month.RDS"
+  )
+)

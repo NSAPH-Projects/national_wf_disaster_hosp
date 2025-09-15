@@ -1,6 +1,4 @@
 
-
-
 # Load the tigris package
 library(here)
 library(tigris)
@@ -28,3 +26,8 @@ st_write(
   driver = "GeoJSON",
   delete_dsn = TRUE
 )
+
+zcta_list <- sort(unique(zctas_2020$ID_admin_unit))
+
+write_rds(zcta_list, here("data_for_upload", 'zcta_list.RDS'))
+
