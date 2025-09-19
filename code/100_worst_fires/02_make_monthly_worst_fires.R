@@ -1,16 +1,11 @@
-# Divide wf disaster data into monthly files to create monthly exposure
-# This will be based on ignition dates only
-
-
-# Libraries ---------------------------------------------------------------
+# 100 worst fires
 
 pacman::p_load(tidyverse, here, sfarrow, sf)
-
 
 # Read --------------------------------------------------------------------
 
 wf_dat <- 
-  st_read(here('local_data', 'raw_data', 'wfbz_disasters_2000-2025.geojson'))
+  st_read(here("local_data", "intermediate_data", 'worst_100_fires.geojson'))
 
 
 # Make monthly files ------------------------------------------------------
@@ -58,14 +53,10 @@ for (i in 1:length(months)) {
     main_mon,
     here(
       "local_data",
-      "monthly_wf_exposure",
+      "monthly_worst_100_fires_exposure",
       paste0("month_", months[i], ".geojson")
     ),
     driver = "GeoJSON",
     delete_dsn = TRUE
   )
 }
-
-
-
-
